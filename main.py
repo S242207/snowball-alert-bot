@@ -3,6 +3,9 @@ import datetime
 import requests
 import os
 
+# 初始化變數
+last_alert_time = None  # 初始化 last_alert_time
+
 # Telegram bot config
 TOKEN = os.environ['TOKEN']
 CHAT_ID = os.environ['CHAT_ID']
@@ -22,8 +25,8 @@ def check_market_condition():
 def is_market_open():
     """Check if current time is during market hours"""
     now = datetime.datetime.now()
-    start_time = datetime.time(9, 0)  # 9:00 AM
-    end_time = datetime.time(13, 30)  # 1:30 PM
+    start_time = datetime.time(9, 0)  # 開盤時間 09:00
+    end_time = datetime.time(13, 30)  # 收盤時間 13:30
     return start_time <= now.time() <= end_time
 
 while True:
@@ -33,9 +36,9 @@ while True:
             if condition and not last_alert_sent:
                 send_alert(msg)
                 last_alert_sent = True
-        else:
-            last_alert_sent = False  # Reset alert flag after market closes
-        time.sleep(60)  # Check every minute while market is open
+            else:
+                last_alert_sent = False  # Reset after market closes
+        time.sleep(60)  # 每分鐘檢查一次
     except Exception as e:
         print(f"Error: {e}")
         time.sleep(60)
